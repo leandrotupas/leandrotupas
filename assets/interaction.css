@@ -1,0 +1,150 @@
+/* YANCY / V20 — restrained motion system
+   Motion only supports hierarchy, navigation and visual discovery.
+   Progressive enhancement: without JS, all content stays visible. */
+
+/* Tiny scroll reading indicator, using the browser compositor only when
+   CSS scroll-driven animations are supported. No scroll event handler. */
+.redesign .reading-progress {
+  position:fixed; z-index:80; top:0; left:0; width:100%; height:3px;
+  background:linear-gradient(90deg,var(--cobalt) 0%,#8c78ec 74%,var(--coral) 100%);
+  transform:scaleX(0); transform-origin:left center; pointer-events:none;
+}
+@supports (animation-timeline: scroll()) {
+  .redesign .reading-progress {animation:reading-progress linear both; animation-timeline:scroll(root block)}
+  @keyframes reading-progress {from{transform:scaleX(0)} to{transform:scaleX(1)}}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Opening sequence: fast and readable, no loading overlay or letter-by-letter effect. */
+  .redesign.motion-polish[data-page="home"] .hello-pill,
+  .redesign.motion-polish[data-page="home"] .hero-copy h1,
+  .redesign.motion-polish[data-page="home"] .hero-summary,
+  .redesign.motion-polish[data-page="home"] .hero-availability,
+  .redesign.motion-polish[data-page="home"] .hero-actions {
+    animation:yancy-enter .66s cubic-bezier(.2,.8,.24,1) both;
+  }
+  .redesign.motion-polish[data-page="home"] .hello-pill {animation-delay:0s}
+  .redesign.motion-polish[data-page="home"] .hero-copy h1 {animation-delay:.065s}
+  .redesign.motion-polish[data-page="home"] .hero-summary {animation-delay:.14s}
+  .redesign.motion-polish[data-page="home"] .hero-availability {animation-delay:.205s}
+  .redesign.motion-polish[data-page="home"] .hero-actions {animation-delay:.27s}
+  @keyframes yancy-enter {
+    from {opacity:0;transform:translate3d(0,15px,0)}
+    to {opacity:1;transform:translate3d(0,0,0)}
+  }
+  .redesign.motion-polish[data-page="home"] .hero-word::after {
+    animation:yancy-underline .58s cubic-bezier(.17,.8,.25,1) .56s both;
+    transform-origin:left center;
+  }
+  @keyframes yancy-underline {
+    from{transform:rotate(-2deg) scaleX(0)}
+    to{transform:rotate(-2deg) scaleX(1)}
+  }
+
+  /* Project opening: the title and metadata land with a quick editorial rhythm. */
+  .redesign.motion-polish[data-page="project"] .project-breadcrumb,
+  .redesign.motion-polish[data-page="project"] .project-heading-row,
+  .redesign.motion-polish[data-page="project"] .project-dek,
+  .redesign.motion-polish[data-page="project"] .project-hero-meta {
+    animation:yancy-enter .56s cubic-bezier(.2,.8,.24,1) both;
+  }
+  .redesign.motion-polish[data-page="project"] .project-breadcrumb {animation-delay:0s}
+  .redesign.motion-polish[data-page="project"] .project-heading-row {animation-delay:.065s}
+  .redesign.motion-polish[data-page="project"] .project-dek {animation-delay:.13s}
+  .redesign.motion-polish[data-page="project"] .project-hero-meta {animation-delay:.2s}
+
+  /* Reveal selected editorial elements, not every image or line of body copy. */
+  .redesign.motion-ready [data-reveal].motion-chapter {
+    opacity:0;transform:translate3d(0,18px,0);
+    transition:opacity .58s ease,transform .58s cubic-bezier(.18,.75,.25,1);
+  }
+  .redesign.motion-ready [data-reveal].motion-chapter.in-view {opacity:1;transform:translate3d(0,0,0)}
+
+  /* Respect image presentation: hover elevates the card, not crops its artwork. */
+  @media (hover:hover) and (pointer:fine) {
+    .redesign .project-card {
+      transition:transform .3s cubic-bezier(.2,.7,.18,1);
+    }
+    .redesign .project-card:hover {transform:translate3d(0,-4px,0)}
+    .redesign .project-card .project-image {
+      transition:box-shadow .3s ease,border-color .3s ease;
+    }
+    .redesign .project-card:hover .project-image {
+      box-shadow:0 15px 35px rgba(18,25,46,.13);
+      border-color:rgba(26,32,60,.2)
+    }
+    .redesign .project-card .project-image img {
+      transition:transform .5s cubic-bezier(.22,.76,.24,1)!important;
+    }
+    .redesign .project-card:hover .project-image img {transform:scale(1.022)!important}
+    /* The three flagship identity thumbnails are complete wordmarks, not crop targets. */
+    .redesign .project-card[data-category="case-study"]:hover .project-image img {transform:none!important}
+    .redesign .project-card .featured-label {
+      transition:transform .28s cubic-bezier(.17,.77,.23,1),box-shadow .28s ease;
+    }
+    .redesign .project-card:hover .featured-label {
+      transform:translate3d(2px,-2px,0);
+      box-shadow:4px 5px 0 var(--ink);
+    }
+    .redesign .project-card .project-title-icon {
+      display:inline-block;opacity:.5;transform:translate3d(-5px,3px,0);
+      transition:transform .28s ease,opacity .28s ease;
+    }
+    .redesign .project-card:hover .project-title-icon {opacity:1;transform:translate3d(3px,-2px,0)}
+    .redesign .hero-tile {transition:transform .36s cubic-bezier(.2,.8,.22,1),box-shadow .36s ease}
+    .redesign .hero-tile:hover {box-shadow:0 19px 40px rgba(18,25,46,.22)}
+
+    /* Hand-drawn feeling: nav lines grow horizontally, buttons nudge their arrows. */
+    .redesign .desktop-nav a {position:relative;border-bottom:0}
+    .redesign .desktop-nav a::after {
+      content:"";position:absolute;left:0;right:0;bottom:1px;height:2px;
+      background:var(--cobalt);transform-origin:left;transform:scaleX(0);
+      transition:transform .26s cubic-bezier(.2,.75,.3,1);
+    }
+    .redesign .desktop-nav a:hover::after,.redesign .desktop-nav a:focus-visible::after {transform:scaleX(1)}
+    .redesign .cta-dark>span,.redesign .header-side span[aria-hidden],
+    .redesign .contact-email span,.redesign .archive-toggle span,
+    .redesign .next-arrow,.redesign .text-action span {
+      display:inline-block;transition:transform .26s cubic-bezier(.2,.8,.24,1)
+    }
+    .redesign .cta-dark:hover>span,.redesign .header-side:hover span[aria-hidden],
+    .redesign .contact-email:hover span,.redesign .archive-toggle:hover span,
+    .redesign .text-action:hover span {transform:translate3d(4px,-3px,0)}
+    .redesign .project-next a:hover .next-arrow {transform:translate3d(8px,-6px,0)}
+
+    .redesign .approach-steps article {transition:background .25s ease,transform .3s ease}
+    .redesign .approach-steps article:hover {transform:translateY(-3px)}
+    .redesign .skill-cloud span {transition:background .2s,border-color .2s,transform .22s}
+    .redesign .skill-cloud span:hover {background:var(--lilac);transform:translateY(-2px);border-color:var(--cobalt)}
+    .redesign .case-study-contents a,
+    .redesign .gallery-item,.redesign .case-visual-button {
+      transition:background .2s ease,box-shadow .26s ease,transform .26s ease;
+    }
+    .redesign .gallery-item:hover,
+    .redesign .case-visual-button:hover {
+      box-shadow:0 9px 25px rgba(25,28,45,.13);
+      transform:translateY(-2px);
+    }
+    /* Wünderbar's natural-ratio galleries must never scale or crop images. */
+    .redesign[data-project="wunderbar"] .case-study-visual-grid .case-visual-button:hover img {
+      transform:none!important;
+    }
+  }
+
+  /* Native dialogs: very quick entrance, never animate the backdrop. */
+  .redesign .contact-dialog[open] .contact-modal,
+  .redesign .lightbox[open] img {animation:yancy-dialog .2s cubic-bezier(.2,.75,.25,1) both}
+  @keyframes yancy-dialog {from{opacity:.35;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+}
+
+/* Touch users get clear tap feedback without hover-only motion. */
+@media (hover:none) {
+  .redesign .project-card:active .project-image {outline:2px solid var(--cobalt);outline-offset:-2px}
+  .redesign .cta-dark:active,.redesign .archive-toggle:active {filter:brightness(1.12)}
+}
+@media (prefers-reduced-motion:reduce) {
+  .redesign .reading-progress {animation:none!important;transform:none!important;opacity:0}
+  .redesign.motion-polish *, .redesign.motion-polish *::before,.redesign.motion-polish *::after {
+    animation:none!important;transition:none!important;scroll-behavior:auto!important;
+  }
+}
